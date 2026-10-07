@@ -1,0 +1,25 @@
+# 虚拟环境与打包产物（千万别传，几万个小文件会把上传卡死）
+.build_venv/
+venv/
+.venv/
+env/
+
+# Python 缓存
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# 打包中间产物与结果
+build/
+dist/
+*.manifest
+*.log
+
+# 下载的视频（避免误传大文件）
+下载/
+
+# 系统文件
+.DS_Store
+Thumbs.db
+desktop.ini

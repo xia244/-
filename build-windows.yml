@@ -1,0 +1,51 @@
+name: 构建 Windows EXE
+
+# 用法（无需本地环境，云端免费构建）：
+# 1. 把本项目推到你的 GitHub 仓库
+# 2. 打开仓库页面 → Actions → 选择本工作流 → Run workflow
+# 3. 跑完后在 Artifacts 里下载 exe
+
+on:
+  workflow_dispatch:
+    inputs:
+      console_mode:
+        description: "是否构建带控制台的调试版"
+        type: choice
+        default: "窗口版"
+        options:
+          - 窗口版
+          - 调试版
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 配置 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: 安装依赖
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller
+
+      - name: 打包 EXE
+        env:
+          CONSOLE_MODE: ${{ github.event.inputs.console_mode == '调试版' && '1' || '0' }}
+        run: pyinstaller build.spec --clean --noconfirm
+
+      - name: 冒烟测试（能启动即视为打包成功）
+        run: |
+          dir dist
+
+      - name: 上传产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: 视频去水印下载器-Windows
+          path: dist/*.exe
+          if-no-files-found: error
